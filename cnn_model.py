@@ -44,14 +44,14 @@ class CNN:
         b_cv1 = self.bias_variable([32])
         h_cv1 = tf.nn.relu(self.conv2d(x_image, w_cv1) + b_cv1)
         h_mp1 = self.max_pool_2x2(h_cv1)
-        h_mp1 = tf.nn.dropout(h_mp1,Config.keep_prob)
+        #h_mp1 = tf.nn.dropout(h_mp1,Config.keep_prob)
 
         # 卷积层 2
         w_cv2 = self.weight_variable([5, 5, 32, 64])
         b_cv2 = self.bias_variable([64])
         h_cv2 = tf.nn.relu(self.conv2d(h_mp1, w_cv2) + b_cv2)
         h_mp2 = self.max_pool_2x2(h_cv2)
-        h_mp2 = tf.nn.dropout(h_mp2, Config.keep_prob)
+        #h_mp2 = tf.nn.dropout(h_mp2, Config.keep_prob)
 
         # 卷积层 3
         w_cv3 = self.weight_variable([5, 5, 64, 64])
@@ -71,6 +71,7 @@ class CNN:
         W_fc2 = self.weight_variable([128, Config.char_num * len(Config.characters)])
         b_fc2 = self.bias_variable([Config.char_num * len(Config.characters)])
         output = tf.add(tf.matmul(h_fc1_drop, W_fc2), b_fc2)
+
         # 优化器&损失函数
         self.loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=self.input_y, logits=output))
         predict = tf.reshape(output, [-1, Config.char_num, len(Config.characters)], name='predict')
@@ -82,6 +83,7 @@ class CNN:
         self.train_step = tf.train.AdamOptimizer(
             Config.alpha).minimize(self.loss)
         self.accuracy = tf.reduce_mean(tf.cast(predict_correct_vec, tf.float32))
+
         # tensorboard 配置
         tf.summary.scalar("loss", self.loss)
         tf.summary.scalar("accuracy", self.accuracy)

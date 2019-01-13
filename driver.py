@@ -73,11 +73,13 @@ class Run:
                 sess.run(model.train_step, feed_dict=dict)
 
                 if total_batch % Config.print_per_batch == 0:
+                    # 输出在验证集和训练集上的准确率和损失值
                     dict[model.keep_prob] = 1.0
                     train_accuracy, train_loss = sess.run([model.accuracy, model.loss], feed_dict=dict)
                     val_acc, val_loss = self.evaluate(sess, self.val_x, self.val_y, self.val_num)
 
                     if val_acc > best_acc:
+                        # 记录最好的结果
                         best_acc = val_acc
                         last_improved_step = total_batch
                         improved = '*'
@@ -89,6 +91,7 @@ class Run:
                     print msg.format(total_batch, train_accuracy, train_loss, val_acc, val_loss, improved)
 
                 if total_batch % Config.save_per_batch == 0:
+                    # 写入tensorboard
                     dict[model.keep_prob] = 1.0
                     s = sess.run(model.merged_summary, feed_dict=dict)
                     model.writer.add_summary(s, total_batch)
@@ -102,6 +105,7 @@ class Run:
                 print 'No improvement for over 1000 steps, auto-stopping....'
                 break
 
+        # 输出在测试集上的准确率
         test_acc, test_loss = self.evaluate(sess, self.test_x, self.test_y, self.test_num)
 
         print "Test accuracy:{:8.2%}, accuracy:{:6.2f}".format(test_acc, test_loss)
