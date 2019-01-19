@@ -15,6 +15,7 @@ class CNN:
         self.input_y = tf.placeholder(
             tf.float32, [None, Config.char_num * len(Config.characters)], name='input_y')
         self.keep_prob = tf.placeholder("float")
+        self.training = tf.placeholder(tf.bool)
 
         self.CNN_model()
 
@@ -38,11 +39,16 @@ class CNN:
 
 
     def CNN_model(self):
-        x_image = tf.reshape(self.input_x, [-1, Config.height, Config.width, 1], name='x_image')
+        x_image = tf.reshape(self.input_x,
+                             [-1, Config.height, Config.width, 1], name='x_image')
+        # batch normalization
+        x_norm = tf.layers.batch_normalization(x_image,
+                                               training=self.training ,momentum=0.9)
+
         # 卷积层 1:
         w_cv1 = self.weight_variable([5, 5, 1, 32])
         b_cv1 = self.bias_variable([32])
-        h_cv1 = tf.nn.relu(self.conv2d(x_image, w_cv1) + b_cv1)
+        h_cv1 = tf.nn.relu(self.conv2d(x_norm, w_cv1) + b_cv1)
         h_mp1 = self.max_pool_2x2(h_cv1)
         #h_mp1 = tf.nn.dropout(h_mp1,Config.keep_prob)
 
@@ -58,7 +64,7 @@ class CNN:
         b_cv3 = self.bias_variable([64])
         h_cv3 = tf.nn.relu(self.conv2d(h_mp2, w_cv3) + b_cv3)
         h_mp3 = self.max_pool_2x2(h_cv3)
-        h_mp3 = tf.nn.dropout(h_mp3, Config.keep_prob)
+        # h_mp3 = tf.nn.dropout(h_mp3, Config.keep_prob)
 
         # 全连接
         W_fc1 = self.weight_variable([20 * 8 * 64, 128])
@@ -72,16 +78,20 @@ class CNN:
         b_fc2 = self.bias_variable([Config.char_num * len(Config.characters)])
         output = tf.add(tf.matmul(h_fc1_drop, W_fc2), b_fc2)
 
-        # 优化器&损失函数
-        self.loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=self.input_y, logits=output))
-        predict = tf.reshape(output, [-1, Config.char_num, len(Config.characters)], name='predict')
-        labels = tf.reshape(self.input_y, [-1, Config.char_num, len(Config.characters)], name='labels')
+        self.loss = (tf.reduce_mean(
+            tf.nn.sigmoid_cross_entropy_with_logits(labels=self.input_y, logits=output)))
+        predict = tf.reshape(output, [-1, Config.char_num,
+                                      len(Config.characters)], name='predict')
+        labels = tf.reshape(self.input_y, [-1, Config.char_num,
+                                           len(Config.characters)], name='labels')
         predict_max_idx = tf.argmax(predict, axis=2, name='predict_max_idx')
         labels_max_idx = tf.argmax(labels, axis=2, name='labels_max_idx')
         predict_correct_vec = tf.equal(predict_max_idx, labels_max_idx)
 
-        self.train_step = tf.train.AdamOptimizer(
-            Config.alpha).minimize(self.loss)
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            self.train_step = tf.train.AdamOptimizer(
+                Config.alpha).minimize(self.loss)
         self.accuracy = tf.reduce_mean(tf.cast(predict_correct_vec, tf.float32))
 
         # tensorboard 配置
@@ -89,4 +99,3 @@ class CNN:
         tf.summary.scalar("accuracy", self.accuracy)
         self.merged_summary = tf.summary.merge_all()
         self.writer = tf.summary.FileWriter(Config.tensorboard_folder)
-

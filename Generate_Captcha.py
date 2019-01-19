@@ -21,12 +21,12 @@ class Config(object):
     train_folder = 'train'
     validation_folder = 'validation'
     tensorboard_folder = 'tensorboard'  # tensorboard的log路径
-    generate_num = (5000, 500, 500)  # 训练集，验证集和测试集数量
+    generate_num = (10000, 500, 500)  # 训练集，验证集和测试集数量
     alpha = 1e-3  # 学习率
     Epoch = 100  # 训练轮次
-    batch_size = 64     # 批次数量
-    keep_prob = 0.5     # dropout比例
-    print_per_batch = 20    #每多少次输出结果
+    batch_size = 64  # 批次数量
+    keep_prob = 0.5  # dropout比例
+    print_per_batch = 20  # 每多少次输出结果
     save_per_batch = 20
 
 
@@ -47,23 +47,43 @@ class Generate:
         else:
             os.mkdir(folder)
 
-    def gen_captcha(self, folder, gen_num):
+    def gen_captcha(self, folder, gen_num, random_=True):
         # 生成验证码图片
-        for _ in tqdm(range(gen_num)):
-            while True:
-                label = ''.join('%s' % num for num in
-                                random.sample(Config.characters, Config.char_num))
-                path = folder + '/%s.jpg' % label
+        desc = '{:<10}'.format(folder)
 
-                # 检查验证码是否已存在
-                if not os.path.exists(path):
+        if random_:
+            # 随机生成验证码，用于测试集和验证集
+            for _ in tqdm(range(gen_num), desc=desc):
+                while True:
+                    label = ''.join('%s' % num for num in
+                                    random.sample(Config.characters, Config.char_num))
+                    path = folder + '/%s.jpg' % label
+
+                    # 检查验证码是否已存在
+                    if not os.path.exists(path):
+                        self.image.generate_image(label)
+                        self.image.write(label, path)
+                        break
+
+        else:
+            # 按顺序生成验证码
+            for num in tqdm(range(gen_num), desc=desc):
+                num_length = len(str(num))
+                if num_length < Config.char_num:
+                    # 不足4位由0补齐
+                    label = '0' * (Config.char_num - num_length) + str(num)
+                    path = folder + '/%s.jpg' % label
                     self.image.generate_image(label)
                     self.image.write(label, path)
-                    break
+                else:
+                    label = str(num)
+                    path = folder + '/%s.jpg' % label
+                    self.image.generate_image(label)
+                    self.image.write(label, path)
 
     def run(self):
         print '==> Generating images...'
-        self.gen_captcha(Config.train_folder, Config.generate_num[0])
+        self.gen_captcha(Config.train_folder, Config.generate_num[0], random_=False)
         self.gen_captcha(Config.validation_folder, Config.generate_num[1])
         self.gen_captcha(Config.test_folder, Config.generate_num[2])
 
@@ -125,4 +145,3 @@ class ReadData:
 
 if __name__ == '__main__':
     Generate()
-
