@@ -68,7 +68,7 @@ class Config(object):
 
 * 大致结构如下：
 
-  ![整体结构](https://github.com/AwesomeTang/Captcha_CNN/images/blob/master/image-20190113153215388.png)
+  ![整体结构](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/image-20190113153215388.png)
 
 #### 训练&评估
 
