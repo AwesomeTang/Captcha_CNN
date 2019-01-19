@@ -38,7 +38,7 @@ class Config(object):
 
 * 验证码图片示例：
 
-![0193](https://github.com/AwesomeTang/Captcha_CNN/images/0193.jpg)
+![0193](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/0193.jpg)
 
 * `check_path()`:检查文件夹是否存在，如不存在则创建。
 * `gen_captcha()`:生成验证码方法，写入之前检查是否以存在，如存在重新生成。
@@ -68,7 +68,7 @@ class Config(object):
 
 * 大致结构如下：
 
-  ![整体结构](https://github.com/AwesomeTang/Captcha_CNN/images/image-20190113153215388.png)
+  ![整体结构](https://github.com/AwesomeTang/Captcha_CNN/images/blob/master/image-20190113153215388.png)
 
 #### 训练&评估
 
@@ -115,9 +115,9 @@ Test accuracy:  93.00%, loss:  0.08
 
   * Accrracy
 
-    ![accrracy](https://github.com/AwesomeTang/Captcha_CNN/images/acc.png)
+    ![accrracy](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/acc.png)
 
   * loss
 
-    ![loss](https://github.com/AwesomeTang/Captcha_CNN/images/loss.png)
+    ![loss](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/loss.png)
 
