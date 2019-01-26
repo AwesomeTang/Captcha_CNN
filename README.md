@@ -38,7 +38,7 @@ class Config(object):
 
 * 验证码图片示例：
 
-![0193](/Users/tangwenpan/Documents/python/captcha_CNN/images/0193.jpg)
+![0193](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/0193.jpg)
 
 * `check_path()`:检查文件夹是否存在，如不存在则创建。
 * `gen_captcha()`:生成验证码方法，写入之前检查是否以存在，如存在重新生成。
@@ -68,7 +68,7 @@ class Config(object):
 
 * 大致结构如下：
 
-  ![image-20190113153215388](/Users/tangwenpan/Documents/python/captcha_CNN/images/image-20190113153215388.png)
+  ![整体结构](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/image-20190113153215388.png)
 
 #### 训练&评估
 
@@ -84,7 +84,7 @@ class Config(object):
 
 目前经过8000次迭代训练集准确率可达99%以上，测试集准确率93%，还是存在一定过拟合，不过现在模型是基于CPU训练的，完成一次训练耗费时间大约4个小时左右，后续调整了再进行更新。
 
-```python
+```
 Images for train ：10000, for validation : 1000, for test : 1000
 Epoch : 1
 Step     0, train_acc:   7.42%, train_loss:  1.43, val_acc:   9.85%, val_loss:  1.40, improved:*  
@@ -115,9 +115,9 @@ Test accuracy:  93.00%, loss:  0.08
 
   * Accrracy
 
-    ![image-20190119235647640](/Users/tangwenpan/Documents/python/captcha_CNN/images/acc.png)
+    ![accrracy](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/acc.png)
 
   * loss
 
-    ![image-20190119235717783](/Users/tangwenpan/Documents/python/captcha_CNN/images/loss.png)
+    ![loss](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/loss.png)
 
