@@ -8,6 +8,7 @@
 from cnn_model import *
 from Generate_Captcha import *
 import os
+from datetime import datetime
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -62,10 +63,17 @@ class Run:
 
     def run_model(self):
 
+        saver = tf.train.Saver(max_to_keep=1)
+        if not os.path.exists(Config.saver_folder):
+            os.mkdir(Config.saver_folder)
+        save_path = os.path.join(Config.saver_folder, 'best_validation')
+
         total_batch = 0
         best_acc = 0
         last_improved_step = 0
+        require_steps = 1000
         flag = False
+        start_time = datetime.now()
 
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
@@ -88,6 +96,8 @@ class Run:
                         # 记录最好的结果
                         best_acc = val_acc
                         last_improved_step = total_batch
+                        # 保存模型
+                        saver.save(sess=sess, save_path=save_path)
                         improved = '*'
                     else:
                         improved = ''
@@ -103,15 +113,17 @@ class Run:
                     s = sess.run(model.merged_summary, feed_dict=dict)
                     model.writer.add_summary(s, total_batch)
 
-                if total_batch - last_improved_step > 1000:
+                if total_batch - last_improved_step > require_steps:
                     flag = True
                     break
 
                 total_batch += 1
             if flag:
-                print 'No improvement for over 1000 steps, auto-stopping....'
+                print 'No improvement for over %d steps, auto-stopping....'%require_steps
                 break
-
+        end_time = datetime.now()
+        time_diff = (end_time - start_time).seconds
+        print 'Time Usage : {:.2f} hours'.format(time_diff / 3600.0)
         # 输出在测试集上的准确率
         test_acc, test_loss = self.evaluate(sess, self.test_x, self.test_y, self.test_num)
 
