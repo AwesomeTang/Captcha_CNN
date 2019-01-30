@@ -43,11 +43,11 @@ class Run:
 
     @staticmethod
     def feed_data(x, y, keep_prob, is_training=True):
-        dict = {model.input_x: x,
-                model.input_y: y,
-                model.keep_prob: keep_prob,
-                model.training: is_training}
-        return dict
+        feed_dict = {model.input_x: x,
+                     model.input_y: y,
+                     model.keep_prob: keep_prob,
+                     model.training: is_training}
+        return feed_dict
 
     def evaluate(self, sess, val_x, val_y, val_size):
         total_loss = 0.
@@ -55,8 +55,8 @@ class Run:
 
         for x_, y_ in self.next_batch(val_x, val_y, val_size):
             length = len(y_)
-            dict = self.feed_data(x_, y_, 1.0, False)
-            val_acc, val_loss = sess.run([model.accuracy, model.loss], feed_dict=dict)
+            feed_dict = self.feed_data(x_, y_, 1.0, False)
+            val_acc, val_loss = sess.run([model.accuracy, model.loss], feed_dict=feed_dict)
             total_acc += val_acc * length
             total_loss += val_loss * length
         return total_acc / val_size, total_loss / val_size
@@ -81,15 +81,15 @@ class Run:
         for epoch in range(Config.Epoch):
             print 'Epoch : %d' % (epoch + 1)
             for x, y in self.next_batch(self.train_x, self.train_y, self.train_num):
-                dict = self.feed_data(x, y, Config.keep_prob, True)
-                sess.run(model.train_step, feed_dict=dict)
+                feed_dict = self.feed_data(x, y, Config.keep_prob, True)
+                sess.run(model.train_step, feed_dict=feed_dict)
 
                 if total_batch % Config.print_per_batch == 0:
                     # 输出在验证集和训练集上的准确率和损失值
-                    dict[model.keep_prob] = 1.0
-                    dict[model.training] = False
+                    feed_dict[model.keep_prob] = 1.0
+                    feed_dict[model.training] = False
                     train_accuracy, train_loss = sess.run([model.accuracy, model.loss],
-                                                          feed_dict=dict)
+                                                          feed_dict=feed_dict)
                     val_acc, val_loss = self.evaluate(sess, self.val_x, self.val_y, self.val_num)
 
                     if val_acc > best_acc:
@@ -108,9 +108,9 @@ class Run:
 
                 if total_batch % Config.save_per_batch == 0:
                     # 写入tensorboard
-                    dict[model.keep_prob] = 1.0
-                    dict[model.training] = False
-                    s = sess.run(model.merged_summary, feed_dict=dict)
+                    feed_dict[model.keep_prob] = 1.0
+                    feed_dict[model.training] = False
+                    s = sess.run(model.merged_summary, feed_dict=feed_dict)
                     model.writer.add_summary(s, total_batch)
 
                 if total_batch - last_improved_step > require_steps:
@@ -119,7 +119,7 @@ class Run:
 
                 total_batch += 1
             if flag:
-                print 'No improvement for over %d steps, auto-stopping....'%require_steps
+                print 'No improvement for over %d steps, auto-stopping....' % require_steps
                 break
         end_time = datetime.now()
         time_diff = (end_time - start_time).seconds

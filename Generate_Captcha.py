@@ -13,9 +13,9 @@ import numpy as np
 
 
 class Config(object):
-    width = 160 # 验证码图片的宽
-    height = 60 # 验证码图片的高
-    char_num = 4    # 验证码字符个数
+    width = 160  # 验证码图片的宽
+    height = 60  # 验证码图片的高
+    char_num = 4  # 验证码字符个数
     characters = range(10)
     generate_num = (10000, 500, 500)  # 训练集，验证集和测试集数量
 
@@ -25,14 +25,12 @@ class Config(object):
     tensorboard_folder = 'tensorboard'  # tensorboard的log路径
     saver_folder = 'checkpoints'
 
-
-    alpha = 1e-3    # 学习率
-    Epoch = 100 # 训练轮次
-    batch_size = 64 # 批次数量
-    keep_prob = 0.5 # dropout比例
-    print_per_batch = 20    # 每多少次输出结果
+    alpha = 1e-3  # 学习率
+    Epoch = 100  # 训练轮次
+    batch_size = 64  # 批次数量
+    keep_prob = 0.5  # dropout比例
+    print_per_batch = 20  # 每多少次输出结果
     save_per_batch = 20
-
 
 
 class Generate:
@@ -112,7 +110,7 @@ class ReadData:
 
     @staticmethod
     def label2vec(label):
-        '''
+        """
         将验证码标签转为40维的向量。
         :param label: 1327
         :return:
@@ -120,7 +118,7 @@ class ReadData:
             0,0,0,1,0,0,0,0,0,0,
             0,0,1,0,0,0,0,0,0,0,
             0,0,0,0,0,0,0,1,0,0]
-        '''
+        """
         label_vec = np.zeros(Config.char_num * len(Config.characters))
         for i, num in enumerate(label):
             idx = i * len(Config.characters) + int(num)
@@ -128,14 +126,14 @@ class ReadData:
         return label_vec
 
     def load_data(self, folder):
-        '''
+        """
         加载样本数据
         :param folder: 图片存放文件夹
         :return:
             data: 图片数据
             label:  图片标签
             size:   图片数量
-        '''
+        """
         if os.path.exists(folder):
             path_list = os.listdir(folder)
             size = len(path_list)
