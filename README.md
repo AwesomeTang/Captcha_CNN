@@ -113,9 +113,9 @@ Test accuracy:  93.00%, loss:  0.08
 
 * tensorboard
 
-  * Accrracy
+  * Accuracy
 
-    ![accrracy](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/acc.png)
+    ![accuracy](https://github.com/AwesomeTang/Captcha_CNN/blob/master/images/acc.png)
 
   * loss
 
